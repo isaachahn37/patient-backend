@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    container_name: patient-backend
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://168.110.216.58:13306/patientdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "Hahncraft288!"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
