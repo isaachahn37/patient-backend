@@ -1,7 +1,7 @@
-package com.example.patient.service;
+package com.xtramile.patient.service;
 
-import com.example.patient.dto.PatientRequest;
-import com.example.patient.dto.PatientResponse;
+import com.xtramile.patient.dto.PatientRequest;
+import com.xtramile.patient.dto.PatientResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

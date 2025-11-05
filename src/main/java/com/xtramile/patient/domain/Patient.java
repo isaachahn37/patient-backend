@@ -1,4 +1,4 @@
-package com.example.patient.domain;
+package com.xtramile.patient.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

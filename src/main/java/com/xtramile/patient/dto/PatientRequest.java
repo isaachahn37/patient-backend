@@ -1,6 +1,6 @@
-package com.example.patient.dto;
+package com.xtramile.patient.dto;
 
-import com.example.patient.domain.Gender;
+import com.xtramile.patient.domain.Gender;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;

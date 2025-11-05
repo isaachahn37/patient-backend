@@ -1,4 +1,4 @@
-package com.example.patient.dto;
+package com.xtramile.patient.dto;
 
 public record AddressResponse(
         Long id,

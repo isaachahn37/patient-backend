@@ -1,8 +1,12 @@
-package com.example.patient.mapper;
+package com.xtramile.patient.mapper;
 
-import com.example.patient.domain.Address;
-import com.example.patient.domain.Patient;
+import com.xtramile.patient.domain.Address;
+import com.xtramile.patient.domain.Patient;
 import com.example.patient.dto.*;
+import com.xtramile.patient.dto.AddressRequest;
+import com.xtramile.patient.dto.AddressResponse;
+import com.xtramile.patient.dto.PatientRequest;
+import com.xtramile.patient.dto.PatientResponse;
 
 public final class PatientMapper {
     private PatientMapper() {

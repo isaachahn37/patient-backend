@@ -1,11 +1,10 @@
-package com.example.patient.service.impl;
+package com.xtramile.patient.service.impl;
 
-import com.example.patient.domain.Patient;
-import com.example.patient.dto.PatientRequest;
-import com.example.patient.dto.PatientResponse;
-import com.example.patient.mapper.PatientMapper;
-import com.example.patient.repository.PatientRepository;
-import com.example.patient.service.PatientService;
+import com.xtramile.patient.dto.PatientRequest;
+import com.xtramile.patient.dto.PatientResponse;
+import com.xtramile.patient.mapper.PatientMapper;
+import com.xtramile.patient.repository.PatientRepository;
+import com.xtramile.patient.service.PatientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

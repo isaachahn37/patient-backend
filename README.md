@@ -7,8 +7,10 @@
 
 ## Build & Run (Docker)
 ```bash
-docker compose build
+docker compose down
+docker compose build --no-cache
 docker compose up -d
+docker compose logs -f backend
 # API: http://<host>:8080/api/v1/patients
 ```
 

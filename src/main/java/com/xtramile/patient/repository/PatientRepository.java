@@ -1,6 +1,6 @@
-package com.example.patient.repository;
+package com.xtramile.patient.repository;
 
-import com.example.patient.domain.Patient;
+import com.xtramile.patient.domain.Patient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

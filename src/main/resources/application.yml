@@ -6,6 +6,13 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://168.110.216.58:13306/patientdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:Hahncraft288!}
+    hikari:
+      maximumPoolSize: 10
+      minimumIdle: 2
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 1500000
+      keepaliveTime: 300000
   jpa:
     hibernate:
       ddl-auto: validate

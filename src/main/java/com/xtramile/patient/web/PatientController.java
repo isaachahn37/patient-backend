@@ -1,8 +1,8 @@
-package com.example.patient.web;
+package com.xtramile.patient.web;
 
-import com.example.patient.dto.PatientRequest;
-import com.example.patient.dto.PatientResponse;
-import com.example.patient.service.PatientService;
+import com.xtramile.patient.dto.PatientRequest;
+import com.xtramile.patient.dto.PatientResponse;
+import com.xtramile.patient.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

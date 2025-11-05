@@ -1,4 +1,4 @@
-package com.example.patient.web;
+package com.xtramile.patient.web;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
