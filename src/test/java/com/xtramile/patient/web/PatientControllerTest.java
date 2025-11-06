@@ -77,7 +77,7 @@ class PatientControllerTest {
         when(service.list(eq("isa"), any())).thenReturn(page);
 
         mvc.perform(get("/api/v1/patients")
-                        .param("q", "isa")
+                        .param("search", "isa")
                         .param("page", "0")
                         .param("size", "10")
                         .param("sort", "lastName,asc"))

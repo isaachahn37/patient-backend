@@ -17,7 +17,7 @@ public class Patient {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 64)
-    private String pid; // Patient Identity
+    private String pid;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;

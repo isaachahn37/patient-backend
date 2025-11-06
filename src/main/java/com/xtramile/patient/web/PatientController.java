@@ -4,10 +4,7 @@ import com.xtramile.patient.dto.PatientRequest;
 import com.xtramile.patient.dto.PatientResponse;
 import com.xtramile.patient.service.PatientService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,43 +12,50 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/patients")
 @CrossOrigin
 public class PatientController {
-    private final PatientService service;
 
-    public PatientController(PatientService service) {
-        this.service = service;
+    private final PatientService patientService;
+
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
     }
 
     @GetMapping
     public Page<PatientResponse> list(
-            @RequestParam(value = "q", required = false) String q,
+            @RequestParam(name = "search", required = false) String searchQuery,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "lastName,asc") String sort
     ) {
-        String[] s = sort.split(",");
-        Sort sortObj = (s.length == 2 && s[1].equalsIgnoreCase("desc")) ? Sort.by(s[0]).descending() : Sort.by(s[0]).ascending();
-        Pageable pageable = PageRequest.of(page, size, sortObj);
-        return service.list(q, pageable);
+        Pageable pageable = PageRequest.of(page, size, parseSort(sort));
+        return patientService.list(searchQuery, pageable);
     }
 
-    @GetMapping("/{id}")
-    public PatientResponse get(@PathVariable Long id) {
-        return service.get(id);
+    @GetMapping("/{patientId}")
+    public PatientResponse get(@PathVariable Long patientId) {
+        return patientService.get(patientId);
     }
 
     @PostMapping
-    public ResponseEntity<PatientResponse> create(@RequestBody @Valid PatientRequest request) {
-        return ResponseEntity.ok(service.create(request));
+    public ResponseEntity<PatientResponse> create(@RequestBody @Valid PatientRequest patientRequest) {
+        return ResponseEntity.ok(patientService.create(patientRequest));
     }
 
-    @PutMapping("/{id}")
-    public PatientResponse update(@PathVariable Long id, @RequestBody @Valid PatientRequest request) {
-        return service.update(id, request);
+    @PutMapping("/{patientId}")
+    public PatientResponse update(@PathVariable Long patientId,
+                                  @RequestBody @Valid PatientRequest patientRequest) {
+        return patientService.update(patientId, patientRequest);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
+    @DeleteMapping("/{patientId}")
+    public ResponseEntity<Void> delete(@PathVariable Long patientId) {
+        patientService.delete(patientId);
         return ResponseEntity.noContent().build();
+    }
+
+    private Sort parseSort(String sort) {
+        String[] parts = sort.split(",", 2);
+        String field = parts[0];
+        boolean desc = parts.length == 2 && "desc".equalsIgnoreCase(parts[1]);
+        return desc ? Sort.by(field).descending() : Sort.by(field).ascending();
     }
 }

@@ -1,4 +1,4 @@
-# Patient Backend (Spring Boot 3, Java 17, Maven, Lombok, Flyway)
+# Patient Backend
 
 - MySQL (OCI): `168.110.216.58:13306`, DB `patientdb`, user `root`.
 - Flyway:
@@ -11,12 +11,12 @@ docker compose down
 docker compose build --no-cache
 docker compose up -d
 docker compose logs -f backend
-# API: http://<host>:8080/api/v1/patients
+# API: http://localhost:8080/api/v1/patients
 ```
 
 ## Sample endpoints
 - `GET /api/v1/patients?q={pidOrName}&page=0&size=10&sort=lastName,asc`
 - `GET /api/v1/patients/{id}`
-- `POST /api/v1/patients` (PatientRequest with nested address)
+- `POST /api/v1/patients`
 - `PUT /api/v1/patients/{id}`
 - `DELETE /api/v1/patients/{id}`
