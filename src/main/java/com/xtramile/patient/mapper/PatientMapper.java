@@ -2,7 +2,6 @@ package com.xtramile.patient.mapper;
 
 import com.xtramile.patient.domain.Address;
 import com.xtramile.patient.domain.Patient;
-import com.example.patient.dto.*;
 import com.xtramile.patient.dto.AddressRequest;
 import com.xtramile.patient.dto.AddressResponse;
 import com.xtramile.patient.dto.PatientRequest;
