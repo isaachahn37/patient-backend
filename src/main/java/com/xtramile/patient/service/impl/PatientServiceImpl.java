@@ -13,43 +13,55 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class PatientServiceImpl implements PatientService {
-    private final PatientRepository repo;
 
-    public PatientServiceImpl(PatientRepository repo) {
-        this.repo = repo;
+    private final PatientRepository patientRepository;
+
+    public PatientServiceImpl(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PatientResponse> list(String q, Pageable pageable) {
-        return repo.search(q, pageable).map(PatientMapper::toResponse);
+    public Page<PatientResponse> list(String searchQuery, Pageable pageable) {
+        return patientRepository.search(searchQuery, pageable)
+                .map(PatientMapper::toResponse);
     }
 
     @Override
-    public PatientResponse create(PatientRequest request) {
-        if (repo.existsByPid(request.pid())) throw new IllegalArgumentException("PID already exists");
-        var saved = repo.save(PatientMapper.toEntity(request));
-        return PatientMapper.toResponse(saved);
+    public PatientResponse create(PatientRequest patientRequest) {
+        if (patientRepository.existsByPid(patientRequest.pid())) {
+            throw new IllegalArgumentException("PID already exists");
+        }
+        var savedPatient = patientRepository.save(PatientMapper.toEntity(patientRequest));
+        return PatientMapper.toResponse(savedPatient);
     }
 
     @Override
-    public PatientResponse update(Long id, PatientRequest request) {
-        var p = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-        if (!p.getPid().equals(request.pid())) throw new IllegalArgumentException("PID cannot be changed");
-        PatientMapper.update(p, request);
-        return PatientMapper.toResponse(p);
+    public PatientResponse update(Long patientId, PatientRequest patientRequest) {
+        var patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+
+        if (!patient.getPid().equals(patientRequest.pid())) {
+            throw new IllegalArgumentException("PID cannot be changed");
+        }
+
+        PatientMapper.update(patient, patientRequest);
+        return PatientMapper.toResponse(patient);
     }
 
     @Override
-    public void delete(Long id) {
-        if (!repo.existsById(id)) throw new IllegalArgumentException("Patient not found");
-        repo.deleteById(id);
+    public void delete(Long patientId) {
+        if (!patientRepository.existsById(patientId)) {
+            throw new IllegalArgumentException("Patient not found");
+        }
+        patientRepository.deleteById(patientId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PatientResponse get(Long id) {
-        return repo.findById(id).map(PatientMapper::toResponse)
+    public PatientResponse get(Long patientId) {
+        return patientRepository.findById(patientId)
+                .map(PatientMapper::toResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
     }
 }

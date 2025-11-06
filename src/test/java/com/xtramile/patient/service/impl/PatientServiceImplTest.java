@@ -9,6 +9,7 @@ import com.xtramile.patient.mapper.PatientMapper;
 import com.xtramile.patient.repository.PatientRepository;
 import com.xtramile.patient.domain.Gender;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -26,6 +27,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("PatientServiceImpl")
 class PatientServiceImplTest {
 
     @Mock
@@ -34,12 +36,12 @@ class PatientServiceImplTest {
     private PatientServiceImpl service;
 
     @BeforeEach
-    void setUp() {
+    void initializeServiceUnderTest() {
         service = new PatientServiceImpl(repo);
     }
 
     // ---------- helpers ----------
-    private PatientRequest req(String pid) {
+    private PatientRequest buildPatientRequest(String pid) {
         return new PatientRequest(
                 pid,
                 "Isaac",
@@ -51,7 +53,7 @@ class PatientServiceImplTest {
         );
     }
 
-    private PatientResponse resp(Long id, String pid) {
+    private PatientResponse buildPatientResponse(Long id, String pid) {
         return new PatientResponse(
                 id, pid, "Isaac", "Hahn",
                 LocalDate.of(1990, 1, 2),
@@ -64,10 +66,10 @@ class PatientServiceImplTest {
     // ---------- tests ----------
 
     @Test
+    @DisplayName("list(q, pageable) maps entities to responses")
     void list_mapsEntitiesToResponses() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("lastName").ascending());
 
-        // mock a Patient entity (no need to know its constructor)
         Patient e1 = mock(Patient.class);
         Patient e2 = mock(Patient.class);
         Page<Patient> page = new PageImpl<>(List.of(e1, e2), pageable, 2);
@@ -75,8 +77,8 @@ class PatientServiceImplTest {
         when(repo.search(eq("isa"), eq(pageable))).thenReturn(page);
 
         try (MockedStatic<PatientMapper> mapper = mockStatic(PatientMapper.class)) {
-            mapper.when(() -> PatientMapper.toResponse(e1)).thenReturn(resp(1L, "PID0001"));
-            mapper.when(() -> PatientMapper.toResponse(e2)).thenReturn(resp(2L, "PID0002"));
+            mapper.when(() -> PatientMapper.toResponse(e1)).thenReturn(buildPatientResponse(1L, "PID0001"));
+            mapper.when(() -> PatientMapper.toResponse(e2)).thenReturn(buildPatientResponse(2L, "PID0002"));
 
             Page<PatientResponse> out = service.list("isa", pageable);
 
@@ -89,8 +91,9 @@ class PatientServiceImplTest {
     }
 
     @Test
+    @DisplayName("create(request) succeeds when PID is unique")
     void create_succeeds_whenPidUnique() {
-        PatientRequest request = req("PID1234");
+        PatientRequest request = buildPatientRequest("PID1234");
         Patient entityIn = mock(Patient.class);
         Patient entitySaved = mock(Patient.class);
 
@@ -99,7 +102,7 @@ class PatientServiceImplTest {
 
         try (MockedStatic<PatientMapper> mapper = mockStatic(PatientMapper.class)) {
             mapper.when(() -> PatientMapper.toEntity(request)).thenReturn(entityIn);
-            mapper.when(() -> PatientMapper.toResponse(entitySaved)).thenReturn(resp(99L, "PID1234"));
+            mapper.when(() -> PatientMapper.toResponse(entitySaved)).thenReturn(buildPatientResponse(99L, "PID1234"));
 
             PatientResponse out = service.create(request);
 
@@ -112,8 +115,9 @@ class PatientServiceImplTest {
     }
 
     @Test
+    @DisplayName("create(request) throws when PID already exists")
     void create_throws_whenPidExists() {
-        PatientRequest request = req("PID1234");
+        PatientRequest request = buildPatientRequest("PID1234");
         when(repo.existsByPid("PID1234")).thenReturn(true);
 
         IllegalArgumentException ex =
@@ -125,17 +129,17 @@ class PatientServiceImplTest {
     }
 
     @Test
+    @DisplayName("update(id, request) succeeds when PID unchanged")
     void update_succeeds_whenPidUnchanged() {
         Long id = 77L;
-        PatientRequest request = req("PID7777");
+        PatientRequest request = buildPatientRequest("PID7777");
         Patient existing = mock(Patient.class);
         when(existing.getPid()).thenReturn("PID7777");
         when(repo.findById(id)).thenReturn(Optional.of(existing));
 
         try (MockedStatic<PatientMapper> mapper = mockStatic(PatientMapper.class)) {
-            // update modifies the existing entity (void)
             mapper.when(() -> PatientMapper.update(existing, request)).thenAnswer(inv -> null);
-            mapper.when(() -> PatientMapper.toResponse(existing)).thenReturn(resp(id, "PID7777"));
+            mapper.when(() -> PatientMapper.toResponse(existing)).thenReturn(buildPatientResponse(id, "PID7777"));
 
             PatientResponse out = service.update(id, request);
 
@@ -147,9 +151,10 @@ class PatientServiceImplTest {
     }
 
     @Test
+    @DisplayName("update(id, request) throws when PID changed")
     void update_throws_whenPidChanged() {
         Long id = 77L;
-        PatientRequest request = req("PID-NEW");
+        PatientRequest request = buildPatientRequest("PID-NEW");
         Patient existing = mock(Patient.class);
         when(existing.getPid()).thenReturn("PID-OLD");
         when(repo.findById(id)).thenReturn(Optional.of(existing));
@@ -162,25 +167,27 @@ class PatientServiceImplTest {
     }
 
     @Test
+    @DisplayName("update(id, request) throws when patient not found")
     void update_throws_whenNotFound() {
         Long id = 404L;
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         IllegalArgumentException ex =
-                assertThrows(IllegalArgumentException.class, () -> service.update(id, req("PIDX")));
+                assertThrows(IllegalArgumentException.class, () -> service.update(id, buildPatientRequest("PIDX")));
         assertThat(ex).hasMessageContaining("Patient not found");
 
         verify(repo).findById(id);
     }
 
     @Test
+    @DisplayName("get(id) returns response when found")
     void get_returnsResponse_whenFound() {
         Long id = 10L;
         Patient entity = mock(Patient.class);
         when(repo.findById(id)).thenReturn(Optional.of(entity));
 
         try (MockedStatic<PatientMapper> mapper = mockStatic(PatientMapper.class)) {
-            mapper.when(() -> PatientMapper.toResponse(entity)).thenReturn(resp(id, "PID0010"));
+            mapper.when(() -> PatientMapper.toResponse(entity)).thenReturn(buildPatientResponse(id, "PID0010"));
             PatientResponse out = service.get(id);
             assertThat(out.pid()).isEqualTo("PID0010");
         }
@@ -189,6 +196,7 @@ class PatientServiceImplTest {
     }
 
     @Test
+    @DisplayName("get(id) throws when patient not found")
     void get_throws_whenNotFound() {
         when(repo.findById(1L)).thenReturn(Optional.empty());
 
@@ -200,7 +208,8 @@ class PatientServiceImplTest {
     }
 
     @Test
-    void delete_deletes_whenExists() {
+    @DisplayName("delete(id) deletes patient when patient exists")
+    void delete_deletesPatient_whenExists() {
         when(repo.existsById(5L)).thenReturn(true);
 
         service.delete(5L);
@@ -210,7 +219,8 @@ class PatientServiceImplTest {
     }
 
     @Test
-    void delete_throws_whenMissing() {
+    @DisplayName("delete(id) throws Exception when patient missing")
+    void delete_throwsException_whenMissing() {
         when(repo.existsById(6L)).thenReturn(false);
 
         IllegalArgumentException ex =

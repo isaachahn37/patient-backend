@@ -6,13 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PatientService {
-    Page<PatientResponse> list(String q, Pageable pageable);
 
-    PatientResponse create(PatientRequest request);
+    Page<PatientResponse> list(String searchQuery, Pageable pageable);
 
-    PatientResponse update(Long id, PatientRequest request);
+    PatientResponse create(PatientRequest patientRequest);
 
-    void delete(Long id);
+    PatientResponse update(Long patientId, PatientRequest patientRequest);
 
-    PatientResponse get(Long id);
+    void delete(Long patientId);
+
+    PatientResponse get(Long patientId);
 }
